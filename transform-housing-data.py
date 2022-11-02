@@ -2,14 +2,15 @@ import pandas as pd
 import boto3
 from io import StringIO
 
-aws_s3_bucket = 'housing-data-store'
+aws_s3_bucket = 'project-california-grp3-s'
+filePath      = 'raw-data/housing-data-raw.csv'
 s3_resource = boto3.resource(
     service_name = 's3',
     region_name = 'us-west-2'
 )
 
 # Load in raw data from S3 into a dataframe.
-obj = s3_resource.Bucket(aws_s3_bucket).Object('housing-data-raw.csv').get()
+obj = s3_resource.Bucket(aws_s3_bucket).Object(filePath).get()
 body = obj['Body']
 csv_string = body.read().decode('utf-8')
 #df = pd.read_csv(io.BytesIO(obj['Body'].read())
@@ -62,10 +63,11 @@ df = df[cols]
 df.reset_index(inplace=True)
 
 # Load into S3 to be crawled.
-fname = 'housing-data-curated.csv'
+fname = 'modified-data/housing-data-curated.csv'
 
 csv_buffer = StringIO()
 df.to_csv(csv_buffer, index=False)
 s3_resource.Object(aws_s3_bucket, fname).put(Body=csv_buffer.getvalue())
 
 print(f'{fname} has been uploaded to {aws_s3_bucket}')
+
