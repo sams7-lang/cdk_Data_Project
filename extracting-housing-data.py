@@ -3,8 +3,8 @@ import pandas as pd
 import boto3
 from io import StringIO
 
-
-aws_s3_bucket = 'project-california-grp3-s'
+# Set up AWS bucket resource to import csv later.
+aws_s3_bucket = 'project-california-grp3-s'  # Bucket name.
 s3_resource = boto3.resource(
     service_name = 's3',
     region_name = 'us-west-2'
@@ -53,8 +53,9 @@ def accessAPI(year):
         df['year'] = year
 
         return df
-years = [2019, 2020]
-#years = ['20'+str(i) for i in range(10,21)]
+
+years = ['20'+str(i) for i in range(10,21)]  # List of years from 2010-2020.
+
 # Query from Census API for a range of years and concatenate to one dataframe.
 for x in reversed(years):
         df2 = accessAPI(x)
@@ -65,13 +66,8 @@ for x in reversed(years):
                 df = df2
 
 # Load dataframe into S3 bucket.
-fname = 'raw-data/housing-data-raw.csv'
-path = f'{aws_s3_bucket}/{fname}'
-#df.to_csv(f'./{fname}', index=False)  # Export as csv.
+fname = 'raw-data/housing-data-raw.csv'  # File path within S3 bucket.
+
 csv_buffer = StringIO()
 df.to_csv(csv_buffer, index=False)
-s3_resource.Object(aws_s3_bucket, fname).put(Body=csv_buffer.getvalue())
-
-#s3_resource.Bucket(aws_s3_bucket).upload_file(
-#    Filename=fname, Key=fname
-#)
+s3_resource.Object(aws_s3_bucket, fname).put(Body=csv_buffer.getvalue())  
