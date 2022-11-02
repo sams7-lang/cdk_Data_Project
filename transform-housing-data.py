@@ -2,7 +2,8 @@ import pandas as pd
 import boto3
 from io import StringIO
 
-aws_s3_bucket = 'project-california-grp3-s'
+# Set up AWS resource to access S3. 
+aws_s3_bucket = 'project-california-grp3-s'  # Bucket name.
 filePath      = 'raw-data/housing-data-raw.csv'
 s3_resource = boto3.resource(
     service_name = 's3',
